@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mymanp</title>
+    <style type="text/css">
+    body {
+        padding: 0;
+        margin: 0;
+    }
+    
+    html,
+    body,
+    #map {
+        height: 100%;
+    }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+    <link href="https://cdn.bootcdn.net/ajax/libs/leaflet-locatecontrol/0.74.0/L.Control.Locate.css" rel="stylesheet">
+    <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+
+    <script src="https://cdn.bootcss.com/proj4js/2.4.3/proj4.js"></script>
+    <script src="https://cdn.bootcss.com/proj4leaflet/1.0.1/proj4leaflet.min.js"></script>
+    <script type="text/javascript" src='https://cdn.jsdelivr.net/npm/leaflet.chinesetmsproviders@1.0.22/src/leaflet.ChineseTmsProviders.min.js'></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/leaflet-locatecontrol/0.74.0/L.Control.Locate.min.js"></script>
+    <script src="http://gisarmory.xyz/blog/lib/leaflet/plugins/leaflet.mapCorrection.min.js"></script>
+
+</head>
+
+<body>
+    <div id='map'> </div>
+    <script>
+
+        var Gaode = L.tileLayer.chinaProvider('GaoDe.Normal.Map', {  
+            maxZoom: 18,  
+            minZoom: 5  
+        });  
+        var Gaodimgem = L.tileLayer.chinaProvider('GaoDe.Satellite.Map', {  
+            maxZoom: 18,  
+            minZoom: 5  
+        });  
+        var Gaodimga = L.tileLayer.chinaProvider('GaoDe.Satellite.Annotion', {  
+            maxZoom: 18,  
+            minZoom: 5  
+        });  
+        var Gaodimage = L.layerGroup([Gaodimgem, Gaodimga]);  
+    
+        var baseLayers = {  
+            "高德地图": Gaode,  
+            "高德影像": Gaodimage,  
+        };
+                
+        
+        // 添加自定图道路wms
+        var wmsLayer= L.tileLayer.wms("https://geo.shjinghai.com/geoserver/cite/wms?", {
+                            layers: 'cite:lg3857',//需要加载的图层
+                            format: 'image/png',//返回的数据格式
+                            transparent: true,
+                            //crs: L.CRS.EPSG4326 
+                            //这个地图是3857的,也可以加载，是否可以加载两个图层
+                        });    
+         var lingangguihua= L.tileLayer.wms("https://geo.shjinghai.com/geoserver/cite/wms?", {
+                            layers: 'cite:lingangguihua',//需要加载的图层
+                            format: 'image/png',//返回的数据格式
+                            transparent: true,
+                            crs: L.CRS.EPSG4326 ,
+                            opacity: 0.6
+                            //这个地图是3857的,也可以加载，是否可以加载两个图层
+                        });    
+                        var lingang2035= L.tileLayer.wms("https://geo.shjinghai.com/geoserver/cite/wms?", {
+                            layers: 'cite:临港2035',//需要加载的图层
+                            format: 'image/png',//返回的数据格式
+                            transparent: true,
+                            crs: L.CRS.EPSG3857,
+                            opacity: 1
+                            //这个地图是3857的,也可以加载，是否可以加载两个图层
+                        });   
+
+        var overlayer={"临港道路":wmsLayer,
+                        "滴水湖":lingangguihua,
+                        "临港2035":lingang2035
+    };
+                
+        var map = L.map("map", {
+                    center: [30.8996980598,121.9366619532],
+                    zoom: 10,
+                    layers: [Gaode,wmsLayer],
+                });
+                
+        L.control.layers(baseLayers,overlayer).addTo(map);
+    
+                
+        L.control.locate({
+                        position: 'topleft',
+                    } ).addTo(map);
+                </script>
+</body>
+
+
+</html>
